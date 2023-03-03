@@ -1,18 +1,21 @@
-import logging, os, math
+import os, math, logging
 import logging.config
 from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
+#from Telethroid import started_telethroid
 from database.ia_filterdb import Media
 from database.users_chats_db import db
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, PORT
-from utils import temp
+from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, PORT, WEBHOOK
+from utils import temp, __repo__, __license__, __copyright__
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 from datetime import datetime
 from pytz import timezone
 from pyrogram.errors import BadRequest, Unauthorized
-from plugins import web_server
-from aiohttp import web
+
+if WEBHOOK:
+    from plugins import web_server 
+    from aiohttp import web
 
 # Get logging configurations
 logging.config.fileConfig("logging.conf")
@@ -21,6 +24,7 @@ logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("cinemagoer").setLevel(logging.ERROR)
 LOGGER = logging.getLogger(__name__)
 TIMEZONE = (os.environ.get("TIMEZONE", "Asia/Kolkata"))
+
 class Bot(Client):
 
     def __init__(self):
@@ -31,7 +35,7 @@ class Bot(Client):
             bot_token=BOT_TOKEN,
             workers=300,
             plugins={"root": "plugins"},
-            sleep_threshold=5,
+            sleep_threshold=10,
         )
 
     async def start(self):
@@ -49,19 +53,21 @@ class Bot(Client):
         curr = datetime.now(timezone(TIMEZONE))
         date = curr.strftime('%d %B, %Y')
         time = curr.strftime('%I:%M:%S %p')
-        app = web.AppRunner(await web_server())
-        await app.setup()
-        bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, PORT).start()
+        if WEBHOOK:
+            app = web.AppRunner(await web_server())
+            await app.setup()
+            bind_address = "0.0.0.0"
+            await web.TCPSite(app, bind_address, PORT).start()
         logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
-        logging.info(LOG_STR)
+        #started_telethroid() # installation Telethroid Library   
         if LOG_CHANNEL:
             try:
-                await self.send_message(LOG_CHANNEL, text=f"<b>{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!\n\n📅 Dᴀᴛᴇ : <code>{date}</code>\n⏰ Tɪᴍᴇ : <code>{time}</code>\n🌐 Tɪᴍᴇᴢᴏɴᴇ : <code>{TIMEZONE}</code>\n\n🉐 Vᴇʀsɪᴏɴ : <code>v{__version__} (Layer {layer})</code></b>")                      
-            except Unauthorized:
+                await self.send_message(LOG_CHANNEL, text=f"<b>{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!\n\n📅 Dᴀᴛᴇ : <code>{date}</code>\n⏰ Tɪᴍᴇ : <code>{time}</code>\n🌐 Tɪᴍᴇᴢᴏɴᴇ : <code>{TIMEZONE}</code>\n\n🉐 Vᴇʀsɪᴏɴ : <code>v{__version__} (Layer {layer})</code></b>")  # Repo : {__repo__}\n Copyright : {__copyright__}           
+            except Unauthorized:             
                 LOGGER.warning("Bot isn't able to send message to LOG_CHANNEL")
             except BadRequest as e:
-                LOGGER.error(e)                         
+                LOGGER.error(e)
+                                         
 
     async def stop(self, *args):
         await super().stop()
@@ -83,8 +89,6 @@ class Bot(Client):
         
 app = Bot()
 app.run()
-
-
 
 
 
