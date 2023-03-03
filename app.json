@@ -1,12 +1,16 @@
 {
     "name": "PSY-BOTZ",
     "description": "the telegram Autofilter bot",
-    "logo": "https://graph.org/file/b7e8484f6395a180b6380.jpg",
-    "stack": "container",
+    "logo": "https://telegra.ph/file/773a8cc8877d74c99476c.jpg",
     "keywords": ["telegram", "auto-filter"],
+    "stack": "container",
     "website": "https://github.com/kunjappan-PSY/psy-04",
     "repository": "https://github.com/kunjappan-PSY/psy-04",
     "env": {
+        "WEBHOOK": {
+            "description": "True/False if your server is web support required? the value is True else False",
+            "required": true
+        },
         "BOT_TOKEN": {
             "description": "Your bot token.",
             "required": true
@@ -26,6 +30,14 @@
         "ADMINS": {
             "description": "Username or ID of Admin. Separate multiple Admins by space.",
             "required": true
+        },
+        "SHORT_API": {
+            "description": "Api Key Of shortner You Use.",
+            "required": false
+        },
+        "SHORT_URL": {
+            "description": "Url of shortner site you use.",
+            "required": false
         },
         "PICS": {
             "description": "Add some telegraph link of pictures .",
@@ -70,6 +82,11 @@
         },
         "IMDB": {
             "description": "Imdb, the view of information when making True/False",
+            "value": "True",
+            "required": false     
+        },
+        "PM_IMDB": {
+            "description": "pm Imdb, the view of information when making True/False",
             "value": "True",
             "required": false     
         },
@@ -143,14 +160,13 @@
             "required": false
         }
     },
-    "addons": [],
-    "buildpacks": [{
-        "url": "heroku/python"
-    }],
-    "formation": {
-        "worker": {
-            "quantity": 1,
-            "size": "free"
-        }
-    }
+    "buildpacks":
+        [
+            {"url": "heroku/python"}
+        ]      
 }
+
+
+
+
+
